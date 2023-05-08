@@ -7,7 +7,7 @@ import { Untis } from "./UntisClass.js";
 export class UntisFetcher{
     constructor(untis_school, untis_user, untis_password, untis_url){
         this.untis = new Untis(untis_school, untis_user, untis_password, untis_url)
-        if(process.env.https_proxy!=""){
+        if(process.env.https_proxy!="" && process.env.https_proxy!=undefined){
             var httpsagent = new HttpsProxyAgent.HttpsProxyAgent("http://proxy-003.intra.world:3128")
             this.axios = new axios.Axios({
                 httpsAgent: httpsagent,
