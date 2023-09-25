@@ -16,7 +16,7 @@ export class DatabaseDateObject extends Date {
     toUntisString():String{
       return this.toISOString().substring(0, 10).replace(/[-]*/g, "");
     }
-    toUntisNumber():Number{
+    toUntisNumber():number{
       return this.toISOString().substring(0, 10).replace(/[-]*/g, "") as any as number;
     }
     toWeekDateString():String {

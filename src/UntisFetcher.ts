@@ -47,7 +47,7 @@ export class UntisFetcher {
     untis_user: string = "",
     untis_password: string = "",
     untis_url: string = ""
-  ) {
+  ):Promise<UntisFetcher> {
     let cookies = await this.getJSESSIONID(untis_school);
     return new UntisFetcher(
       untis_school,
@@ -57,78 +57,6 @@ export class UntisFetcher {
       cookies
     );
   }
-  /*async returnLessonNotesByDate(date: DatabaseDateObject) {
-    var url_date = date.toDBString();
-    var timetableResult = await this.ax.get(
-      `https://mese.webuntis.com/WebUntis/api/public/timetable/weekly/data?elementType=5&elementId=14562&date=${url_date}&formatId=2`,
-      { headers: { Cookie: this.cookies } }
-    );
-    var data = JSON.parse(timetableResult.data).data.result.data;
-    var uniqueDates = [
-      ...new Set(
-        data.elementPeriods[data.elementIds[0]].map((lesson) => lesson.date)
-      ),
-    ];
-    var lessonNotesPerDay = {};
-    for (var date_ of uniqueDates) {
-      var temp = data.elementPeriods[data.elementIds[0]].filter((item) => {
-        if (item.date == date_) {
-          return true;
-        }
-        return false;
-      });
-      lessonNotesPerDay[date_] = temp;
-    }
-
-    var lessons = lessonNotesPerDay[date.toUntisString()];
-    if (lessons == undefined) {
-      return null;
-    }
-    var lessonIds = [...new Set(lessons.map((lesson) => lesson.lessonId))];
-    var webtoken = await this.getWebToken();
-    var detailedLessons = {};
-    for (var lesson of lessons) {
-      var startTimeString = "" + lesson.startTime;
-      var startTimeStringMinutes = startTimeString.slice(-2);
-      var startTimeStringHours = startTimeString.replace(
-        startTimeStringMinutes,
-        ""
-      );
-      if (startTimeStringHours.length == 1) {
-        startTimeStringHours = "0" + startTimeStringHours;
-      }
-      var endTimeString = "" + lesson.endTime;
-      var endTimeStringMinutes = endTimeString.slice(-2);
-      var endTimeStringHours = endTimeString.replace(endTimeStringMinutes, "");
-      if (endTimeStringHours.length == 1) {
-        endTimeStringHours = "0" + endTimeStringHours;
-      }
-      endTimeString = endTimeStringHours + ":" + endTimeStringMinutes;
-      startTimeString = startTimeStringHours + ":" + startTimeStringMinutes;
-      var DateString = date.toDBString();
-      var url = `https://mese.webuntis.com/WebUntis/api/rest/view/v1/calendar-entry/detail?elementId=14562&elementType=5&endDateTime=${DateString}T${endTimeString}:00&homeworkOption=DUE&startDateTime=${DateString}T${startTimeString}:00`;
-      var lessonresult = await this.axios.get(url, {
-        headers: {
-          Cookie: this.untis._buildCookies(),
-          Authorization: "Bearer " + webtoken,
-        },
-      });
-      detailedLessons[lesson.lessonId] = JSON.parse(lessonresult.data);
-    }
-    var returnList = [];
-    for (var item in detailedLessons) {
-      returnList.push(
-        detailedLessons[
-          item
-        ].calendarEntries[0].subject.displayName.toString() +
-          ": " +
-          detailedLessons[item].calendarEntries[0].teachingContent
-      );
-    }
-    this.untis.logout();
-    return returnList;
-    
-  }*/
   private async getTimeTable(date: DatabaseDateObject) {
     var url_date = date.toDBString();
     var timetableResult = await this.ax.get(
@@ -192,7 +120,7 @@ export class UntisFetcher {
         (lessonData: any) => new Lesson(lessonData)
       );
     }
-    var lessons = lessonNotesPerDay[date.toUntisString()];
+    var lessons = lessonNotesPerDay[date.toUntisNumber()];
     let studentGroup: Array<string> = [];
     for (let lesson2 in lessons) {
       if (!studentGroup.includes(lessons[lesson2].studentGroup.split("_")[0])) {
@@ -201,7 +129,7 @@ export class UntisFetcher {
     }
     return studentGroup;
   }
-  async returnLessonNotesByDate(date: DatabaseDateObject) {
+  async returnLessonNotesByDate(date: DatabaseDateObject):Promise<Array<any>> {
     var data = await this.getTimeTable(date);
     data = data.elementPeriods[data.elementIds[0]];
     var uniqueDates: Array<number> = this.getUniqueDates(data);
@@ -219,9 +147,9 @@ export class UntisFetcher {
       );
     }
 
-    var lessons = lessonNotesPerDay[date.toUntisString()];
+    var lessons = lessonNotesPerDay[date.toUntisNumber()];
     if (lessons == undefined) {
-      return null;
+      return [];
     }
     let detailedLessons: { [key: string]: CalendarEntry[] } = {};
     for (var lesson of lessons) {
