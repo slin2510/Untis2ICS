@@ -1,3 +1,5 @@
+import Database from "better-sqlite3";
+
 export class DatabaseDateObject extends Date {
     constructor(year: number, month: number, date: number) {
       super(
@@ -19,7 +21,7 @@ export class DatabaseDateObject extends Date {
     toUntisNumber():number{
       return this.toISOString().substring(0, 10).replace(/[-]*/g, "") as any as number;
     }
-    toWeekDateString():String {
+    toWeekDateString():string {
       return (
         this.toISOString().substring(8, 10) +
         "." +
@@ -42,7 +44,7 @@ export class DatabaseDateObject extends Date {
         this.getDate() - days
       );
     }
-    getWeekStartDate(date: DatabaseDateObject|undefined):DatabaseDateObject{
+    getWeekStartDate(date: DatabaseDateObject|undefined=undefined):DatabaseDateObject{
       if (date == undefined) {
         return this.sub(this.getDay() - 1);
       } else {
@@ -64,6 +66,11 @@ export class DatabaseDateObject extends Date {
           (currentThursday.getTime() - firstThursday.getTime()) / 86400000 / 7
       );
       return weekNumber
+    }
+    calcYears() { // birthday is a date
+      var ageDifMs = DatabaseDateObject.now() - this.getTime();
+      var ageDate = new Date(ageDifMs); // miliseconds from epoch
+      return Math.abs(ageDate.getUTCFullYear() - 1970);
     }
     static fromDateObject(date: Date){
       console.log(date.getDate(), date.getMonth() + 1, date.getFullYear())

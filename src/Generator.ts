@@ -2,37 +2,38 @@ import { createReport } from "docx-templates";
 import pkg from "prompts";
 const prompt = pkg;
 import fs from "fs";
-import dateFormat, { masks } from "dateformat";
-import { DataManager } from "./DataManager.js";
-import { DatabaseDateObject } from "./DBDateObject.js";
-import { Week, WorkData } from "./WorkData.js";
+import { DataManager } from "./DataManager";
+import { DatabaseDateObject } from "./DBDateObject";
+import { Week, WorkData, Azubi } from "./WorkData";
 
 export class Generator {
-  constructor(date = null, datamanager) {
+  datamanager: DataManager
+  date: DatabaseDateObject
+  azubi: Azubi
+  constructor(date:DatabaseDateObject, datamanager: DataManager, azubi:Azubi) {
       this.date = date;
       this.datamanager = datamanager
+      this.azubi = azubi
     
   }
   async getWorkData() {
-    var workdata = new WorkData("Nils Schöttle", 2, null, 8);
-    workdata.week = new Week();
-    workdata.week.monday = await this.datamanager.returnDay(
+    let monday = await this.datamanager.returnDay(
       this.date.getWeekStartDate()
     );
-    workdata.week.tuesday = await this.datamanager.returnDay(
+    let tuesday = await this.datamanager.returnDay(
       this.date.getWeekStartDate().add(1)
     );
-    workdata.week.wednesday = await this.datamanager.returnDay(
+    let wednesday = await this.datamanager.returnDay(
       this.date.getWeekStartDate().add(2)
     );
-    workdata.week.thursday = await this.datamanager.returnDay(
+    let thursday = await this.datamanager.returnDay(
       this.date.getWeekStartDate().add(3)
     );
-    workdata.week.friday = await this.datamanager.returnDay(
+    let friday = await this.datamanager.returnDay(
       this.date.getWeekStartDate().add(4)
     );
-    workdata.week.startDate = workdata.week.monday.date.toWeekDateString();
-    workdata.week.endDate = workdata.week.friday.date.toWeekDateString();
+    var week = new Week(monday, tuesday, wednesday, thursday, friday)
+    var workdata = new WorkData(this.azubi, 8, week);
     return workdata;
   }
   async genReport() {
@@ -45,11 +46,11 @@ export class Generator {
       template,
       data: data,
     });
-    if (!fs.existsSync("out")) {
-      fs.mkdirSync("out");
+    if (!fs.existsSync("docx")) {
+      fs.mkdirSync("docx");
     }
     fs.writeFileSync(
-      "out/" + this.date.getFullYear() +  "_KW" + this.date.getCalendarWeek(this.date) + ".docx",
+      "docx/" + this.date.getFullYear() +  "_KW" + this.date.getCalendarWeek(this.date) + ".docx",
       buffer
     );
     console.log(
@@ -60,7 +61,7 @@ export class Generator {
     );
   }
   
-  async askForReport(date) {
+  async askForReport() {
     var response = await prompt({
       type: "confirm",
       name: "report",
@@ -70,7 +71,7 @@ export class Generator {
       return response;
     });
     if (response["report"] == true) {
-      this.genReport(date);
+      this.genReport();
     }
   }
   

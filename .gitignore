@@ -128,6 +128,8 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
-db/*.db
+db/
 .DS_Store
 templates/~$sbildungsnachweis_taeglich-TO.docx
+out/
+docx/

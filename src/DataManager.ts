@@ -5,7 +5,7 @@ import { DatabaseDateObject } from "./DBDateObject";
 export class DataManager {
   database: DatabaseManager;
   untisfetcher: UntisFetcher;
-  public static async initialize(untis_school:string,untis_user:string,untis_password:string,untis_url:string) {
+  public static async initialize(untis_school:string,untis_user:string,untis_password:string,untis_url:string, db_path:string) {
     var untisfetcher = await UntisFetcher.initialize(
       untis_school,
       untis_user,
@@ -13,7 +13,7 @@ export class DataManager {
       untis_url
     );
     await untisfetcher.login();
-    return new DataManager(untisfetcher, "./data.db");
+    return new DataManager(untisfetcher, db_path);
   }
   constructor(untisfetcher:UntisFetcher,dbpath: string
   ) {
@@ -52,7 +52,7 @@ export class DataManager {
       var lessonnotes:Array<any> = await this.untisfetcher.returnLessonNotesByDate(date);
       var valueToReturn = new Day(date, lessonnotes, true);
     } else {
-      var notes = this.database.getNotesForDay(date);
+      var notes:any = this.database.getNotesForDay(date);
       if (notes == undefined) {
         notes = {};
         notes["notes"] = "";
