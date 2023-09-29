@@ -15,7 +15,7 @@ export class Interface{
   azubi:Azubi
   public static async initialize():Promise<Interface>{
     const datamanager = await DataManager.initialize(config.school,config.username,config.password,config.webuntisUrl,config.dbPath)
-    const azubi = new Azubi(config.azubiName, config.azubiAusbildungStart, "")
+    const azubi = new Azubi(config.azubiName, parseInt(config.azubiAusbildungStart), "")
     return new Interface(datamanager, azubi)
   }
   constructor(datamanager:DataManager, azubi:Azubi){

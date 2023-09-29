@@ -133,3 +133,6 @@ db/
 templates/~$sbildungsnachweis_taeglich-TO.docx
 out/
 docx/
+temp/
+*.zip
+build/

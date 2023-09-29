@@ -1,12 +1,12 @@
 import { DatabaseDateObject } from "./DBDateObject";
 
 export class config {
-  static school:string = "IT-Schule Stuttgart";
-  static username:string = "nils.schoettle";
-  static password:string = "Bnsy240!";
-  static webuntisUrl:string = "mese.webuntis.com";
-  static dbPath:string = "db/app.db";
-  static azubiName:string = "Nils Schöttle";
+  static school = process.env.SCHOOL || "";
+  static username = process.env.USERNAME || "";
+  static password= process.env.PASSWORD || "";
+  static webuntisUrl = process.env.WEBUNTIS_URL || "";
+  static dbPath = process.env.DB_PATH || "";
+  static azubiName = process.env.azubiName || "";
   //DatabseDateObject("JAHR", "MONAT", "TAG")
-  static azubiAusbildungStart:number = new DatabaseDateObject(2021,8,1).calcYears()
+  static azubiAusbildungStart = process.env.AZUBIJAHR || "";
 }
