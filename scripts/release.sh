@@ -4,4 +4,3 @@ cp .env.template release/.env
 cp -r templates release/templates/
 zip -r BerichtsheftGenerator.zip release/
 rm -rf release/
-
